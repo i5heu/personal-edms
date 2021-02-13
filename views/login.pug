@@ -1,7 +1,8 @@
 extends bootstrap
 block body
     h1 Login
-    #loginInput
-        input#email(type="email", name="mail", placeholder="E-Mail")
-        input#pwd(type="password", name="pwd" placeholder="Password")
+    div #{loginLeft}
+    form#loginInput(action="/rest/login", method="post")
+        input#email(type="email", required, name="mail", placeholder="E-Mail")
+        input#pwd(type="password", required, name="pwd" placeholder="Password")
         button(type="submit") Login
