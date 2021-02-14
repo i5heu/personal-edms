@@ -4,7 +4,11 @@ let ipCache: number[] = [];
 let ipLoginCache: number[] = [];
 export function resetIpCache() {
   ipCache = [];
-  setTimeout(resetIpCache, 10000);
+  setTimeout(resetIpCache, 10000); // 10sec
+}
+export function resetLoginIpCache() {
+  ipLoginCache = [];
+  setTimeout(resetIpCache, 300000); // 5min
 }
 
 export function loginLeft(req: express.Request): number {

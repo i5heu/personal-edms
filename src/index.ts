@@ -1,12 +1,14 @@
 console.info("Server starting....");
 import express from "express";
-import { reqCheck, resetIpCache, loginLeft } from "./limitChecks";
+import { reqCheck, resetIpCache, loginLeft, resetLoginIpCache } from "./limitChecks";
 import sqlite3 from "sqlite3";
+import { login } from "./login";
 
 const db = new sqlite3.Database(":memory:");
 const app = express();
 
 resetIpCache();
+resetLoginIpCache();
 
 app.use(
   express.urlencoded({
@@ -23,11 +25,16 @@ app.get("/", (req, res) => {
 
 app.post("/rest/login", (req, res) => {
   if (!req.body.mail || !req.body.pwd) {
-    res.status(500).send("You have to insert e-mail and password!");
+    res.status(500).send("You have to insert an e-mail and password!");
     return;
   }
 
-  if (!reqCheck(req, res, true)) return;
+  if (!reqCheck(req, res)) return;
+
+  const loginResult = login(db, req, res, req.body.mail, req.body.pwd);
+  if (!loginResult) return;
+
+  //TODO set cookie and redirect to dashboard or to /
 
   res.redirect("/");
 });
