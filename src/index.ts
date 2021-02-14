@@ -3,10 +3,12 @@ import express from "express";
 import { reqCheck, resetIpCache, loginLeft, resetLoginIpCache } from "./limitChecks";
 import sqlite3 from "sqlite3";
 import { login } from "./login";
+import { createTables } from "./createDatabase";
 
 const db = new sqlite3.Database(":memory:");
 const app = express();
 
+createTables(db);
 resetIpCache();
 resetLoginIpCache();
 
@@ -39,4 +41,4 @@ app.post("/rest/login", (req, res) => {
   res.redirect("/");
 });
 
-app.listen(80, () => console.info("Server serving."));
+app.listen(80, () => console.info("Server serving"));
