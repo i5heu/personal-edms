@@ -6,6 +6,7 @@ import {
   resetIpCache,
   loginLeft,
   resetLoginIpCache,
+  reqLeft,
 } from "./limitChecks";
 import sqlite3 from "sqlite3";
 import { isAuthenticated, login } from "./login";
@@ -35,7 +36,7 @@ app.get("/", (req, res) => {
 
 app.get("/dashboard", (req, res) => {
   if (!isAuthenticated(req, res)) return;
-  res.render("dashboard");
+  res.render("dashboard", { reqLeft: reqLeft(req) });
 });
 
 app.post("/rest/login", (req, res) => {

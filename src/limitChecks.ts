@@ -16,6 +16,11 @@ export function loginLeft(req: express.Request): number {
   return 5 - ipLoginCache[req.ip];
 }
 
+export function reqLeft(req: express.Request): number {
+  if (!ipCache[req.ip]) return 30;
+  return 30 - ipCache[req.ip];
+}
+
 export function reqCheck(
   req: express.Request,
   res: express.Response,
