@@ -3,37 +3,37 @@ import { open } from "sqlite";
 
 export async function createTables(db: Database) {
   //create login credentials table
-  console.log("DB: create login credentials table");
-  await db.run(`CREATE TABLE IF NOT EXISTS 'user' (
-        'userId' INT PRIMARY KEY,
+  console.log("DB: create login users table");
+  await db.run(`CREATE TABLE IF NOT EXISTS 'users' (
+        'userId' INTEGER PRIMARY KEY AUTOINCREMENT,
         'email' TEXT NOT NULL,
         'pwd' TEXT NOT NULL
     );`);
 
   //create session table
-  console.log("DB: create session table");
+  console.log("DB: create sessions table");
   await db.run(`CREATE TABLE IF NOT EXISTS 'sessions' (
-        'sessionId' TEXT PRIMARY KEY,
+        'sessionId' TEXT PRIMARY KEY NOT NULL,
         'token' TEXT NOT NULL,
         'userId' INT NOT NULL,
-        Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(userId) REFERENCES user(userId)
     );`);
 
   //create group table
-  console.log("DB: create group table");
+  console.log("DB: create docGroup table");
   await db.run(`CREATE TABLE IF NOT EXISTS 'docGroups' (
-    'groupId' TEXT PRIMARY KEY,
+    'groupId' INTEGER PRIMARY KEY AUTOINCREMENT,
     'name' TEXT NOT NULL,
     'userId' INT NOT NULL,
-    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(userId) REFERENCES user(userId)
   );`);
 
   //create document table
   console.log("DB: create document table");
   await db.run(`CREATE TABLE IF NOT EXISTS 'docs' (
-        'docId' INT PRIMARY KEY,
+        'docId' INTEGER PRIMARY KEY AUTOINCREMENT,
         'hash' TEXT NOT NULL,
         'userId' INT NOT NULL,
         'created' DATETIME DEFAULT CURRENT_TIMESTAMP,

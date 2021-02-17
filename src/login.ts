@@ -24,7 +24,11 @@ export async function login(
   if (!reqCheck(req, res, true)) return false;
 
   //check credentials from database
-  const result = await db.get("SELECT pwd FROM user WHERE email = ?", email);
+  const result = await db.get(
+    "SELECT userId,pwd FROM users WHERE email = ?",
+    email
+  );
+
   if (result.pwd == undefined) {
     res.redirect("/register");
     return false;
@@ -37,6 +41,13 @@ export async function login(
 
   const sessionId = makeId(50);
   loginSessions[sessionId] = makeId(200);
+
+  const sessionInsert = await db.run(
+    "INSERT INTO sessions (sessionId, token, userId) VALUES (?,?,?)",
+    sessionId,
+    loginSessions,
+    result.userId
+  );
 
   return {
     sessionId: sessionId,
@@ -52,6 +63,8 @@ export function isAuthenticated(
   res: express.Response
 ): boolean {
   if (!reqCheck(req, res)) return false;
+
+  //TODO OPTIMIZE THIS
 
   if (
     req.cookies.session_id &&
@@ -73,4 +86,19 @@ function makeId(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+}
+
+export async function getUserId(
+  db: Database,
+  req: express.Request
+): Promise<number | false> {
+  const result = await db.get(
+    "SELECT userId FROM sessions WHERE sessionId = ?",
+    req.cookies.session_id
+  );
+
+  console.log("resultresultresultresultresult", result);
+  
+  if (isNaN(result.userId)) return false;
+  return result.userId;
 }
