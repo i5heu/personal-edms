@@ -1,5 +1,5 @@
 import express from "express";
-import { Database } from "sqlite3";
+import { Database } from "sqlite";
 import { reqCheck } from "./limitChecks";
 
 /**
@@ -8,21 +8,32 @@ import { reqCheck } from "./limitChecks";
  */
 const loginSessions: string[] = [];
 
-export function login(
+export async function login(
   db: Database,
   req: express.Request,
   res: express.Response,
-  mail: string,
+  email: string,
   pwd: string
-):
+): Promise<
   | {
       sessionId: string;
       sessionToken: string;
     }
-  | boolean {
+  | boolean
+> {
   if (!reqCheck(req, res, true)) return false;
 
-  //TODO check credentials from database
+  //check credentials from database
+  const result = await db.get("SELECT pwd FROM user WHERE email = ?", email);
+  if (result.pwd == undefined) {
+    res.redirect("/register");
+    return false;
+  }
+
+  if (result.pwd !== pwd) {
+    res.redirect("/?state=wrong_pwd");
+    return false;
+  }
 
   const sessionId = makeId(50);
   loginSessions[sessionId] = makeId(200);

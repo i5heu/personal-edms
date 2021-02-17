@@ -9,13 +9,32 @@ import {
   reqLeft,
 } from "./limitChecks";
 import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 import { isAuthenticated, login } from "./login";
 import { createTables } from "./createDatabase";
 
-const db = new sqlite3.Database(":memory:");
+let db;
+sqlite3.verbose();
+
+async function createDb() {
+  db = await open({
+    filename: ":memory:",
+    driver: sqlite3.cached.Database,
+  });
+
+  await createTables(db);
+
+  // test code
+  db.run(`INSERT INTO user (userId,email,pwd) VALUES (
+    '',
+    'test@test.test',
+    'test'
+  ); SELECT * FROM user;`);
+}
+createDb();
+
 const app = express();
 
-createTables(db);
 resetIpCache();
 resetLoginIpCache();
 
@@ -39,7 +58,7 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard", { reqLeft: reqLeft(req) });
 });
 
-app.post("/rest/login", (req, res) => {
+app.post("/rest/login", async (req, res) => {
   if (!req.body.mail || !req.body.pwd) {
     res.status(500).send("You have to insert an e-mail and password!");
     return;
@@ -47,7 +66,7 @@ app.post("/rest/login", (req, res) => {
 
   if (!reqCheck(req, res)) return;
 
-  const loginResult = login(db, req, res, req.body.mail, req.body.pwd);
+  const loginResult =  await login(db, req, res, req.body.mail, req.body.pwd);
   if (!loginResult) return;
   if (loginResult === true) throw new Error("This should not happen");
 
