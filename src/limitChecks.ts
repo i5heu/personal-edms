@@ -21,19 +21,20 @@ export function reqCheck(
   res: express.Response,
   login = false
 ): boolean {
+  if (!ipLoginCache[req.ip]) ipLoginCache[req.ip] = 0;
+  if (!ipCache[req.ip]) ipCache[req.ip] = 0;
+
+  ipCache[req.ip]++;
+
+  if (ipCache[req.ip] > 30) {
+    res.status(429).send("429 Too Many Requests");
+    return false;
+  }
+
   if (login) {
-    if (!ipLoginCache[req.ip]) ipLoginCache[req.ip] = 0;
     ipLoginCache[req.ip]++;
 
     if (ipLoginCache[req.ip] > 5) {
-      res.status(429).send("429 Too Many Requests");
-      return false;
-    }
-  } else {
-    if (!ipCache[req.ip]) ipCache[req.ip] = 0;
-    ipCache[req.ip]++;
-
-    if (ipCache[req.ip] > 30) {
       res.status(429).send("429 Too Many Requests");
       return false;
     }
