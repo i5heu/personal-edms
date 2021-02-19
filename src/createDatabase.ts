@@ -31,17 +31,32 @@ export async function createTables(db: Database) {
   );`);
 
   //create document table
+  //TODO on user creation an TMP document must be created to hold unsorted files
   console.log("DB: create document table");
   await db.run(`CREATE TABLE IF NOT EXISTS 'docs' (
         'docId' INTEGER PRIMARY KEY AUTOINCREMENT,
-        'hash' TEXT NOT NULL,
         'userId' INT NOT NULL,
         'created' DATETIME DEFAULT CURRENT_TIMESTAMP,
         'title' TEXT NOT NULL,
-        'OCRText' TEXT NOT NULL,
+        'note' TEXT,
+        'groupId' INT,
+        FOREIGN KEY(userId) REFERENCES user(userId)
+    );`);
+
+  //create files table
+  console.log("DB: create files table");
+  await db.run(`CREATE TABLE IF NOT EXISTS 'files' (
+        'fileId' INTEGER PRIMARY KEY AUTOINCREMENT,
+        'hash' TEXT NOT NULL,
+        'docId' INT NOT NULL,
+        'created' DATETIME DEFAULT CURRENT_TIMESTAMP,
+        'ocrText' TEXT,
         'note' TEXT NOT NULL,
-        'groupId' INT NOT NULL,
-        FOREIGN KEY(userId) REFERENCES user(userId),
-        FOREIGN KEY(groupId) REFERENCES docGroups(groupId)
+        'originalName' TEXT NOT NULL,
+        'encoding' TEXT NOT NULL,
+        'mimetype' TEXT NOT NULL,
+        'filename' TEXT NOT NULL,
+        'size' INT NOT NULL,
+        FOREIGN KEY(docId) REFERENCES docs(docId)
     );`);
 }

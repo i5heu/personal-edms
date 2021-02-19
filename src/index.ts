@@ -1,3 +1,4 @@
+// NOTE TO MYSELF - refactor this thing - it needs a proper router
 console.info("Server starting....");
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -10,9 +11,14 @@ import {
 } from "./limitChecks";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
-import { isAuthenticated, login } from "./login";
+import { getUserId, isAuthenticated, login } from "./login";
 import { createTables } from "./createDatabase";
 import { groupDashboard, createGroup } from "./groups";
+import { uploadNewFiles } from "./files";
+import multer from "multer";
+import { getDocumentsOfUser } from "./documents";
+
+const upload = multer({ dest: "uploads/" });
 
 let db;
 sqlite3.verbose();
@@ -29,6 +35,11 @@ async function createDb() {
   db.run(`INSERT INTO users (email,pwd) VALUES (
     'test@test.test',
     'test'
+  );`);
+
+  db.run(`INSERT INTO docs (userId,title) VALUES (
+    1,
+    'TMP'
   );`);
 }
 createDb();
@@ -56,9 +67,21 @@ app.post("/rest/newGroup", (req, res) => {
   createGroup(db, req, res);
 });
 
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", async (req, res) => {
   if (!isAuthenticated(req, res)) return;
-  res.render("dashboard", { reqLeft: reqLeft(req) });
+  const userId = await getUserId(db, req);
+  if (!userId) return;
+
+  const documents = await getDocumentsOfUser(db, userId)
+
+  res.render("dashboard", {
+    reqLeft: reqLeft(req),
+    documents,
+  });
+});
+app.post("/rest/newFiles", upload.array("files"), (req, res) => {
+  if (!isAuthenticated(req, res)) return;
+  uploadNewFiles(db, req, res);
 });
 
 app.get("/", (req, res) => {
