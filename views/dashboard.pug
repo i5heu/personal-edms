@@ -1,0 +1,24 @@
+extends bootstrap
+block main
+    h2 dashboard
+    div #{reqLeft} req. left
+    a(href="/groups") Groups
+    form(action="/rest/newFiles", method="post", enctype="multipart/form-data") 
+        button(type="submit") Upload
+        input(type="file", name="files", multiple, required, accept="image/png, image/jpeg,.pdf")
+    hr
+    h4 Documents:
+    table#documents
+        tr
+            th ID
+            th Title
+            th created 
+            th note 
+            th groupId
+        each document in documents
+            tr
+                td= document.docId
+                td= document.title
+                td= document.created
+                td= document.note
+                td= document.groupId
