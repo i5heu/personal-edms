@@ -1,6 +1,6 @@
 extends bootstrap
-block main
-    h2 Login
+block body
+    h1 Login
     div #{loginLeft}
     form#loginInput(action="/rest/login", method="post")
         input#email(type="email", required, name="mail", placeholder="E-Mail")
