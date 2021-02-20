@@ -23,7 +23,6 @@ export async function uploadNewFiles(
             file.filename,
             file.size
         );
-        console.log("insert result", result);
     }
 
     res.redirect("/dashboard");

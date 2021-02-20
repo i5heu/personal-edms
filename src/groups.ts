@@ -15,7 +15,6 @@ export async function groupDashboard(
     `SELECT groupId, name, created FROM docGroups WHERE userId = ?;`,
     userId
   );
-  console.log("resultresultresult", result);
 
   res.render("groups", { groups: result });
 }

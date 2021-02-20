@@ -156,4 +156,9 @@ app.post("/rest/login", async (req, res) => {
   res.redirect("/dashboard");
 });
 
-app.listen(8080, () => console.info("Server serving"));
+app.listen(8080, () =>
+  setTimeout( //debug test
+    () => console.log("Server is running on http://127.0.0.1:8080"),
+    2000
+  )
+);
