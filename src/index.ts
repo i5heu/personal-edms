@@ -16,9 +16,11 @@ import { createTables } from "./createDatabase";
 import { groupDashboard, createGroup } from "./groups";
 import { uploadNewFiles } from "./files";
 import multer from "multer";
-import { getDocumentsOfUser } from "./documents";
+import { getDocumentAndFiles, getDocumentsOfUser } from "./documents";
 
-const upload = multer({ dest: "uploads/" });
+const uploadPath = require("os").homedir() + "/personal-edms-files/";
+
+const upload = multer({ dest: uploadPath });
 
 let db;
 sqlite3.verbose();
@@ -33,14 +35,14 @@ async function createDb() {
 
   // test code
   db.run(`INSERT INTO users (email,pwd) VALUES (
-    'test@test.test',
-    'test'
-  );`);
+        'test@test.test',
+        'test'
+    );`);
 
   db.run(`INSERT INTO docs (userId,title) VALUES (
-    1,
-    'TMP'
-  );`);
+        1,
+        'TMP'
+    );`);
 }
 createDb();
 
@@ -67,12 +69,50 @@ app.post("/rest/newGroup", (req, res) => {
   createGroup(db, req, res);
 });
 
+app.get("/doc", async (req, res) => {
+  if (!isAuthenticated(req, res)) return;
+  const userId = await getUserId(db, req);
+  const id = req.query.id as string;
+  if (!userId || !req.query.id || isNaN(parseInt(id))) {
+    res.status(400).send("user or ?=id missing");
+    return;
+  }
+
+  const { doc, files } = await getDocumentAndFiles(db, userId, parseInt(id));
+
+  res.render("document", {
+    doc,
+    files,
+  });
+});
+
+app.get("/rest/file", async (req, res) => {
+  if (!isAuthenticated(req, res)) return;
+  const userId = await getUserId(db, req);
+  const fileId = req.query.id as string;
+  if (!userId || !req.query.id || isNaN(parseInt(fileId))) {
+    res.status(400).send("400 user or ?=id missing");
+    return;
+  }
+
+  const result = await db.get(
+    "SELECT d.userId, f.mimetype, f.filename from files f INNER JOIN docs d ON f.docId = d.docId WHERE f.fileId = ?",
+    fileId
+  );
+  if (result.userId != userId) {
+    res.status(403).send("403 not your file");
+    return;
+  }
+
+  res.sendFile(uploadPath + result.filename);
+});
+
 app.get("/dashboard", async (req, res) => {
   if (!isAuthenticated(req, res)) return;
   const userId = await getUserId(db, req);
   if (!userId) return;
 
-  const documents = await getDocumentsOfUser(db, userId)
+  const documents = await getDocumentsOfUser(db, userId);
 
   res.render("dashboard", {
     reqLeft: reqLeft(req),
@@ -116,4 +156,4 @@ app.post("/rest/login", async (req, res) => {
   res.redirect("/dashboard");
 });
 
-app.listen(80, () => console.info("Server serving"));
+app.listen(8080, () => console.info("Server serving"));

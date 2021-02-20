@@ -1,0 +1,29 @@
+extends bootstrap
+block main
+    h2 Document: #{doc.title}
+    div ID: #{doc.docId}
+    div Created: #{doc.created}
+    div Note: #{doc.note}
+    hr
+    table#documents
+        tr
+            th preview
+            th fileId
+            th created
+            th ocrText
+            th created
+            th note
+            th originalName
+            th filename
+            th size
+        each file in files
+            tr
+                td
+                    img(src="/rest/file?id="+file.fileId, alt="")
+                td= file.fileId
+                td= file.created
+                td= file.ocrText
+                td= file.note
+                td= file.originalName
+                td= file.filename
+                td= file.size

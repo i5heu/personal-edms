@@ -18,7 +18,8 @@ block main
         each document in documents
             tr
                 td= document.docId
-                td= document.title
+                td
+                    a(href="/doc?id="+document.docId) #{document.title}
                 td= document.created
                 td= document.note
                 td= document.groupId

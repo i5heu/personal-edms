@@ -51,7 +51,7 @@ export async function createTables(db: Database) {
         'docId' INT NOT NULL,
         'created' DATETIME DEFAULT CURRENT_TIMESTAMP,
         'ocrText' TEXT,
-        'note' TEXT NOT NULL,
+        'note' TEXT,
         'originalName' TEXT NOT NULL,
         'encoding' TEXT NOT NULL,
         'mimetype' TEXT NOT NULL,
