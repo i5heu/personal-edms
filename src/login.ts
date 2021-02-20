@@ -19,7 +19,7 @@ export async function login(
       sessionId: string;
       sessionToken: string;
     }
-  | boolean
+  | false
 > {
   if (!reqCheck(req, res, true)) return false;
 
