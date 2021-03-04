@@ -19,7 +19,8 @@ block main
         each file in files
             tr
                 td
-                    img(src="/rest/file?id="+file.fileId, alt="")
+                    a(href="/rest/file?id="+file.fileId, download) 
+                        img(src="/rest/file?id="+file.fileId, alt="")
                 td= file.fileId
                 td= file.created
                 td= file.ocrText
