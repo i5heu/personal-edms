@@ -40,6 +40,7 @@ async function createDb() {
         'test'
     );`);
 
+    //TODO check if user already has an TMP Group
     db.run(`INSERT INTO docs (userId,title) VALUES (
         1,
         'TMP'
