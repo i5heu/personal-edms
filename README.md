@@ -8,3 +8,7 @@ Supporting:
 - PDF Search
 - Simple API
 - Encrypted Auto Backup to S3
+
+## RUN
+
+`npm run start`
