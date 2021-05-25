@@ -15,6 +15,7 @@ block main
             th created 
             th note 
             th groupId
+            th edit
         each document in documents
             tr
                 td= document.docId
@@ -23,3 +24,5 @@ block main
                 td= document.created
                 td= document.note
                 td= document.groupId
+                td
+                  a(href="/document/"+document.docId+"/edit") ✎

@@ -9,7 +9,6 @@ export async function uploadNewFiles(
 ) {
     const userId = await getUserId(db, req);
     if (!userId) return;
-    console.log(userId, req.files);
 
 
     for (const file of (req.files as any)) {
@@ -17,7 +16,7 @@ export async function uploadNewFiles(
             "INSERT INTO files (hash, docId, originalName, encoding, mimetype, filename, size) VALUES (?,?,?,?,?,?,?)",
             "bla",
             1,
-            file.originalname,
+            file.originalName,
             file.encoding,
             file.mimetype,
             file.filename,

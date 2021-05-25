@@ -105,7 +105,7 @@ app.get("/rest/file", async (req, res) => {
   }
 
   const result = await db.get(
-    "SELECT d.userId, f.mimetype, f.filename from files f INNER JOIN docs d ON f.docId = d.docId WHERE f.fileId = ?",
+    "SELECT d.userId, f.mimetype, f.filename, f.originalName from files f INNER JOIN docs d ON f.docId = d.docId WHERE f.fileId = ?",
     fileId
   );
   if (result.userId != userId) {
@@ -113,6 +113,8 @@ app.get("/rest/file", async (req, res) => {
     return;
   }
 
+  res.contentType(result.mimetype);
+  res.setHeader("Content-Disposition","attachment; filename=" + result.originalName);
   res.sendFile(filesPath + result.filename);
 });
 
