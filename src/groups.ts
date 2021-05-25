@@ -16,7 +16,7 @@ export async function groupDashboard(
     userId
   );
 
-  res.render("groups", { groups: result });
+  res.render("groups", { groups: result, pagestatus: req.query.pagestatus });
 }
 
 export async function createGroup(
@@ -38,4 +38,25 @@ export async function createGroup(
   );
 
   res.redirect("/groups");
+}
+
+export async function check_getGroup(
+  db: Database,
+  req: express.Request,
+  res: express.Response
+) {
+  if (!req.body.newGroupName) {
+    res.status(500).send("500: You have to insert a Group Name!");
+    return;
+  }
+  const userId = await getUserId(db, req);
+  if (!userId) return;
+
+  const result = await db.all(
+    "SELECT groupId, name, created FROM docGroups WHERE userId = ? AND name = ?",
+    userId,
+    req.body.newGroupName
+  );
+
+  return result.length == 0 ? true : false;
 }

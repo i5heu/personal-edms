@@ -1,3 +1,11 @@
 img {
     max-width: 300px;
 }
+
+#status {
+    border: 1px solid #f00;
+    font-size: 1.2em;
+    background-color: #fee;
+    padding: 5px;
+    margin: 5px;
+}
